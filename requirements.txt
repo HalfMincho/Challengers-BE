@@ -1,1 +1,4 @@
-
+flask
+pymysql
+bcrypt
+passlib
