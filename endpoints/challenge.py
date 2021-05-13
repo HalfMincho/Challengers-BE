@@ -1,12 +1,14 @@
 from flask import Blueprint
 from methods import challenge
+from . import is_api
 import constants.messages
 
 challenge_blueprint = Blueprint('Challenge', __name__)
 
 
 @challenge_blueprint.route('/<int:challenge_id>', methods=['GET', 'OPTIONS'])
-def get_challenge(challenge_id: int):
+@is_api()
+def get_challenge(data, challenge_id: int):
     status, challenge_dict = challenge.get_challenge(challenge_id)
 
     if not status:
@@ -16,6 +18,7 @@ def get_challenge(challenge_id: int):
 
 
 @challenge_blueprint.route('', methods=['POST', 'OPTIONS'])
+@is_api()
 def create_challenge(data):
     status, message, status_code = challenge.create_challenge(**data)
 
