@@ -4,7 +4,7 @@ from constants import messages
 
 
 def get_challenge(challenge_id: int):
-    sql = MySQL()
+    sql = MySQL(dict_cursor=True)
 
     result = sql.query('SELECT id, HEX(submitter), HEX(category), name, auth_way, auth_day, auth_count_in_day, '
                        'start_at, end_at, cost, description FROM challenge WHERE id=%s', (challenge_id,))
