@@ -1,4 +1,4 @@
-from uuid import UUID
+import uuid
 from connector import MySQL
 from constants import messages
 
@@ -21,18 +21,21 @@ def create_challenge(submitter, category, name, auth_way, auth_day, auth_count_i
                      cost, title_image, description):
     sql = MySQL()
 
+    test_uuid = uuid.uuid4()
+
     if (submitter is None or category is None or name is None or auth_way is None or auth_day is None or
             auth_count_in_day is None or start_at is None or end_at is None or cost is None or
-            title_image is None or description):
+            title_image is None or description is None):
         return False, messages.no_required_args, 400
 
     sql.transaction.start()
     try:
-        sql.query('INSERT INTO challenge (submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, '
-                  'end_at, cost, title_iamge, description) '
-                  'VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                  (submitter, category, name, auth_way, auth_day, auth_count_in_day,
-                   start_at, end_at, cost, title_image, description))
+        print(test_uuid.bytes, test_uuid.bytes, name, auth_way, auth_day, auth_count_in_day, cost, description)
+        sql.query('INSERT INTO challenge (uuid, submitter, category, name, auth_way, auth_day,'
+                  'auth_count_in_day, cost, description) '
+                  'VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                  (test_uuid.bytes, test_uuid.bytes, test_uuid.bytes, name, auth_way, auth_day, auth_count_in_day,
+                   cost, description))
     except:
         sql.transaction.rollback()
         return False, messages.exception_occurred, 500
