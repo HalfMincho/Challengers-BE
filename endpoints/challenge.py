@@ -18,7 +18,8 @@ def get_challenge(data, challenge_id: int):
 
 
 @challenge_blueprint.route('', methods=['POST', 'OPTIONS'])
-@is_api()
+@is_api(required_keys=['submitter', 'category', 'name', 'auth_way', 'auth_day', 'auth_count_in_day',
+                       'start_at', 'end_at', 'cost', 'title_image', 'description'], input_type='json')
 def create_challenge(data):
     status, message, status_code = challenge.create_challenge(**data)
 
