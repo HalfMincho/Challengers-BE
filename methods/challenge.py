@@ -6,8 +6,8 @@ from constants import messages
 def get_challenge(challenge_id: int):
     sql = MySQL(dict_cursor=True)
 
-    result = sql.query('SELECT id, HEX(submitter), HEX(category), name, auth_way, auth_day, auth_count_in_day, '
-                       'start_at, end_at, cost, description FROM challenge WHERE id=%s', (challenge_id,))
+    result = sql.query('SELECT id, Hex(submitter), Hex(category), name, auth_way, auth_day, auth_count_in_day, '
+                       'start_at, end_at, cost, description, reg_date FROM challenge WHERE id=%s', (challenge_id,))
 
     if len(result) == 0:
         return False, None
@@ -30,12 +30,11 @@ def create_challenge(submitter, category, name, auth_way, auth_day, auth_count_i
 
     sql.transaction.start()
     try:
-        print(test_uuid.bytes, test_uuid.bytes, name, auth_way, auth_day, auth_count_in_day, cost, description)
         sql.query('INSERT INTO challenge (uuid, submitter, category, name, auth_way, auth_day,'
                   'auth_count_in_day, cost, description) '
                   'VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                  (test_uuid.bytes, test_uuid.bytes, test_uuid.bytes, name, auth_way, auth_day, auth_count_in_day,
-                   cost, description))
+                  (test_uuid.bytes, test_uuid.bytes, test_uuid.bytes, name, auth_way, auth_day,
+                   auth_count_in_day, cost, description))
     except:
         sql.transaction.rollback()
         return False, messages.exception_occurred, 500
@@ -43,3 +42,35 @@ def create_challenge(submitter, category, name, auth_way, auth_day, auth_count_i
         inserted = sql.query('SELECT LAST_INSERT_ID()')[0][0]
         sql.transaction.commit()
         return True, inserted, 200
+
+
+def get_popular_challenge():
+    sql = MySQL(dict_cursor=True)
+
+    result = sql.query('SELECT id, Hex(submitter), Hex(category), name,'
+                       'auth_way, auth_day, auth_count_in_day, start_at,'
+                       'end_at, cost, description, reg_date FROM challenge'
+                       'ORDER BY views desc LIMIT 0, 10')
+
+    if len(result) == 0:
+        return False, None
+
+    result = result[0]
+
+    return True, result
+
+
+def get_recent_challenge():
+    sql = MySQL(dict_cursor=True)
+
+    result = sql.query('SELECT id, Hex(submitter), Hex(category), name,'
+                       'auth_way, auth_day, auth_count_in_day, start_at,'
+                       'end_at, cost, description, reg_date FROM challenge'
+                       'ORDER BY views asc LIMIT 0, 10')
+
+    if len(result) == 0:
+        return False, None
+
+    result = result[0]
+
+    return True, result

@@ -28,3 +28,25 @@ def create_challenge(data):
 
     else:
         return {'created': message}
+
+
+@challenge_blueprint.route('/popular', methods=['GET', 'OPTIONS'])
+@is_api()
+def get_popular_challenge(data):
+    status, challenge_dict = challenge.get_popular_challenge()
+
+    if not status:
+        return {'error': constants.messages.challenge_no_exists}, 404
+
+    return challenge_dict
+
+
+@challenge_blueprint.route('/recent', methods=['GET', 'OPTION'])
+@is_api()
+def get_recent_challenge(data):
+    status, challenge_dict = challenge.get_recent_challenge()
+
+    if not status:
+        return {'error': constants.messages.challenge_no_exists}, 404
+
+    return challenge_dict
