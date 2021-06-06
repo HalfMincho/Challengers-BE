@@ -14,6 +14,15 @@ def get_challenge(challenge_id: int):
 
     result = result[0]
 
+    sql.transaction.start()
+    try:
+        sql.query('UPDATE challenge SET views = views + 1 WHERE id=%s', (challenge_id,))
+    except:
+        sql.transaction.rollback()
+    else:
+        sql.transaction.commit()
+        result['views'] += 1
+
     return True, result
 
 
@@ -66,7 +75,7 @@ def get_recent_challenge():
     result = sql.query('SELECT id, HEX(submitter), HEX(category), name,'
                        'auth_way, auth_day, auth_count_in_day, start_at,'
                        'end_at, cost, description, reg_date FROM challenge'
-                       'ORDER BY views asc LIMIT 0, 10')
+                       'ORDER BY reg_date asc LIMIT 0, 10')
 
     if len(result) == 0:
         return False, None
