@@ -7,7 +7,7 @@ def get_challenge(challenge_id: int):
     sql = MySQL(dict_cursor=True)
 
     result = sql.query('SELECT id, HEX(submitter), HEX(category), name, auth_way, auth_day, auth_count_in_day, '
-                       'start_at, end_at, cost, description, reg_date FROM challenge WHERE id=%s', (challenge_id,))
+                       'start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=%s', (challenge_id,))
 
     if len(result) == 0:
         return False, None
@@ -58,7 +58,7 @@ def get_popular_challenge():
 
     result = sql.query('SELECT id, HEX(submitter), HEX(category), name,'
                        'auth_way, auth_day, auth_count_in_day, start_at,'
-                       'end_at, cost, description, reg_date FROM challenge'
+                       'end_at, cost, description, reg_date, views FROM challenge'
                        'ORDER BY views desc LIMIT 0, 10')
 
     if len(result) == 0:
@@ -74,7 +74,7 @@ def get_recent_challenge():
 
     result = sql.query('SELECT id, HEX(submitter), HEX(category), name,'
                        'auth_way, auth_day, auth_count_in_day, start_at,'
-                       'end_at, cost, description, reg_date FROM challenge'
+                       'end_at, cost, description, reg_date, views FROM challenge'
                        'ORDER BY reg_date asc LIMIT 0, 10')
 
     if len(result) == 0:
