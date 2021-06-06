@@ -56,17 +56,12 @@ def create_challenge(submitter, category, name, auth_way, auth_day, auth_count_i
 def get_popular_challenge():
     sql = MySQL(dict_cursor=True)
 
-    result = sql.query('SELECT id, HEX(submitter), HEX(category), name,'
-                       'auth_way, auth_day, auth_count_in_day, start_at,'
-                       'end_at, cost, description, reg_date, views FROM challenge'
-                       'ORDER BY views desc LIMIT 0, 10')
+    popular_challenge_list = list(sql.query('SELECT id, HEX(submitter), HEX(category), name, '
+                                            'auth_way, auth_day, auth_count_in_day, start_at, '
+                                            'end_at, cost, description, reg_date, views FROM challenge '
+                                            'ORDER BY views desc LIMIT 0, 10'))
 
-    if len(result) == 0:
-        return False, None
-
-    result = result[0]
-
-    return True, result
+    return True, popular_challenge_list
 
 
 def get_recent_challenge():
