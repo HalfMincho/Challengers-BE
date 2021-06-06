@@ -72,6 +72,6 @@ def get_recent_challenge():
     recent_challenge_list = list(sql.query('SELECT id, HEX(submitter), HEX(category), name, '
                                            'auth_way, auth_day, auth_count_in_day, start_at, '
                                            'end_at, cost, description, reg_date, views FROM challenge '
-                                           'ORDER BY reg_date asc LIMIT 0, 10'))
+                                           'ORDER BY reg_date desc LIMIT 0, 10'))
 
     return True, recent_challenge_list
