@@ -1,0 +1,11 @@
+{
+  "name": "challengers_documentation",
+  "version": "1.0.0",
+  "dependencies": {
+    "gh-pages": "^3.1.0"
+  },
+  "scripts": {
+    "update": "npm install -g npm",
+    "deploy": "gh-pages --dotfiles -d docs/_build -b docs-deploy"
+  }
+}
