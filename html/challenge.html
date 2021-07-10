@@ -108,6 +108,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Challenge api</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#challenge-int-challenge-id-get">/challenge/(int:challenge_id) (GET)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#challenge-post">/challenge (POST)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#challenge-int-challenge-id-delete">/challenge/(int:challenge_id) (DELETE)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#challenge-popular-get">/challenge/popular (GET)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#challenge-recent-get">/challenge/recent (GET)</a></li>
 </ul>
@@ -174,7 +175,7 @@
 <dt class="field-even">status</dt>
 <dd class="field-even"><ul class="simple">
 <li><p>200: challenge found</p></li>
-<li><p>404: challenge no exists</p></li>
+<li><p>404: challenge가 존재하지 않음</p></li>
 </ul>
 </dd>
 <dt class="field-odd">returns</dt>
@@ -302,6 +303,50 @@
 <dd class="field-even"><ul class="simple">
 <li><p>200: add challenge completely</p></li>
 <li><p>400: no required arguments</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="challenge-int-challenge-id-delete">
+<h2>/challenge/(int:challenge_id) (DELETE)<a class="headerlink" href="#challenge-int-challenge-id-delete" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><strong>Delete challenge</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramaters</dt>
+<dd class="field-odd"><p><strong>challenge_id</strong></p>
+<ul class="simple">
+<li><p>name: challenge_id</p></li>
+<li><p>in: path</p></li>
+<li><p>description: challenge ID</p></li>
+<li><p>required: true</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/challenge/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">api.challengers.halfmincho.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;deleted&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">resheader Content-Type</dt>
+<dd class="field-odd"><p>application/json</p>
+</dd>
+<dt class="field-even">status</dt>
+<dd class="field-even"><ul class="simple">
+<li><p>200: delete challenge completely</p></li>
+<li><p>404: challenge가 존재하지 않음</p></li>
 </ul>
 </dd>
 </dl>

@@ -51,7 +51,7 @@ Challenge api
     :resheader Content-Type: application/json
     :status:
         - 200: challenge found
-        - 404: challenge no exists
+        - 404: challenge가 존재하지 않음
     :returns: information of challenge
 
 
@@ -173,6 +173,48 @@ Challenge api
     :status:
         - 200: add challenge completely
         - 400: no required arguments
+
+
+/challenge/(int:challenge_id) (DELETE)
+-------------------------------------
+
+    **Delete challenge**
+
+    :Paramaters:
+
+        **challenge_id**
+
+        - name: challenge_id
+        - in: path
+        - description: challenge ID
+        - required: true
+
+
+    **Example request**:
+
+    .. sourcecode:: http
+
+        DELETE /challenge/1 HTTP/1.1
+        Host: api.challengers.halfmincho.com
+        Accept: application/json
+
+    **Example response**:
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Vary: Accept
+        Content-Type: application/json
+
+        {
+            "deleted": 1
+        }
+
+    :resheader Content-Type: application/json
+    :status:
+        - 200: delete challenge completely
+        - 404: challenge가 존재하지 않음
+
 
 /challenge/popular (GET)
 ------------------------
