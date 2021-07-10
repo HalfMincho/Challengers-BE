@@ -30,6 +30,18 @@ def create_challenge(data):
         return {'created': message}
 
 
+@challenge_blueprint.route('/<int:challenge_id>', methods=['DELETE', 'OPTIONS'])
+@is_api()
+def delete_article(data, challenge_id: int):
+    status, message, status_code = challenge.delete_challenge(challenge_id)
+
+    if not status:
+        return {'error': message}, status_code
+
+    else:
+        return {'deleted': challenge_id}
+
+
 @challenge_blueprint.route('/popular', methods=['GET', 'OPTIONS'])
 @is_api()
 def get_popular_challenge(data):

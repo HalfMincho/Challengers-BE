@@ -55,6 +55,25 @@ def create_challenge(submitter, category, name, auth_way, auth_day, auth_count_i
         return True, inserted, 200
 
 
+def delete_challenge(challenge_id: int):
+    sql = MySQL()
+
+    result = sql.query('SELECT id FROM challenge WHERE id=%s', challenge_id)
+
+    if len(result) == 0:
+        return False, messages.challenge_no_exists, 404
+
+    sql.transaction.start()
+    try:
+        sql.query('DELETE FROM challenge WHERE id=%s', challenge_id)
+    except:
+        sql.transaction.rollback()
+        return False, messages.exception_occurred, 403
+    else:
+        sql.transaction.commit()
+        return True, None, 200
+
+
 def get_popular_challenge():
     sql = MySQL(dict_cursor=True)
 
