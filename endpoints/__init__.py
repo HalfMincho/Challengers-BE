@@ -1,5 +1,7 @@
+from methods import token
 from functools import wraps
 from flask import request, jsonify, Response
+import base64
 
 
 def is_api(required_keys=None, acceptable_keys=None, input_type: str = 'query_string'):
