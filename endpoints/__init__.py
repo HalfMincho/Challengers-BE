@@ -57,4 +57,32 @@ def return_api(func, *args, **kwargs):
             return ret_data
 
 
+def protected(verify: bool = False):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if 'Authorization' not in request.headers:
+                return jsonify({'error': 'no_permission'}), 403
+            auth: str = request.headers['Authorization']
+            if auth[:5].lower() != 'token':
+                return jsonify({'error': 'no_permission'}), 403
+            auth = auth.split(' ', 1)[1]
+            try:
+                if len(base64.b64decode(auth.encode())) != 128:
+                    return jsonify({'error': 'no_permission'}), 403
+            except:
+                return jsonify({'error': 'no_permission'}), 403
+            if not token.check(auth, for_admin):
+                return jsonify({'error': 'no_permission'}), 403
+            owner = token.get_owner(auth, for_admin)
+            if owner is None:
+                return jsonify({'error': 'no_permission'}), 403
+            if verify:
+                if not token.verify(auth, for_admin):
+                    return jsonify({'error': 'no_permission'}), 403
+            return func(True, owner, auth, checked_actions, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
 from .challenge import challenge_blueprint
