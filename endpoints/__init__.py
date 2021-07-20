@@ -72,15 +72,15 @@ def protected(verify: bool = False):
                     return jsonify({'error': 'no_permission'}), 403
             except:
                 return jsonify({'error': 'no_permission'}), 403
-            if not token.check(auth, for_admin):
+            if not token.check(auth):
                 return jsonify({'error': 'no_permission'}), 403
-            owner = token.get_owner(auth, for_admin)
+            owner = token.get_owner(auth)
             if owner is None:
                 return jsonify({'error': 'no_permission'}), 403
             if verify:
-                if not token.verify(auth, for_admin):
+                if not token.verify(auth):
                     return jsonify({'error': 'no_permission'}), 403
-            return func(True, owner, auth, checked_actions, *args, **kwargs)
+            return func(True, owner, auth, *args, **kwargs)
         return wrapper
     return decorator
 
