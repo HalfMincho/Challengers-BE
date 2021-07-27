@@ -3,24 +3,24 @@ from connector import MySQL
 from typing import Union, Tuple
 from passlib.hash import pbkdf2_sha512
 from constants.account import pbkdf2_hash_rounds, pbkdf2_hash_salt_size
-from constants.mail import password_reset_mail_body, password_change_mail_body, username_find_mail_body
+from constants.mail import password_reset_mail_body, password_change_mail_body, id_find_mail_body
 import re
 import uuid
 import mailer
 
 
-def get_uuid(username=None, email=None) -> Union[uuid.UUID, None]:
-    if not isinstance(username, str):
-        username = None
+def get_uuid(id=None, email=None) -> Union[uuid.UUID, None]:
+    if not isinstance(id, str):
+        id = None
     if not isinstance(email, str):
         email = None
 
-    if username is None and email is None:
+    if id is None and email is None:
         raise ValueError('Neither username or email must be provided as string.')
 
     sql = MySQL()
-    if username is not None:
-        ret = sql.query('SELECT uuid FROM account WHERE username LIKE %s', (username, ))
+    if id is not None:
+        ret = sql.query('SELECT uuid FROM account WHERE id LIKE %s', (id, ))
         if len(ret) == 1:
             return uuid.UUID(bytes=ret[0][0])
 
@@ -76,8 +76,8 @@ def verify_register_token(email: str, token: str) -> bool:
         return True
 
 
-def register(name: str, email: str, username: str, password: str, affiliation: str, major: str,
-             token: str) -> Tuple[bool, Union[str, None]]:
+def register(name: str, email: str, id: str, password: str, token: str,
+             phone_number: str) -> Tuple[bool, Union[str, None]]:
     sql = MySQL()
     user_uuid = uuid.uuid4()
     while True:
@@ -92,10 +92,10 @@ def register(name: str, email: str, username: str, password: str, affiliation: s
     elif len(email) > 255:
         return False, 'email_too_long'
 
-    if sql.query('SELECT COUNT(*) FROM account WHERE username LIKE %s', (username, ))[0][0] != 0:
-        return False, 'username_exists'
-    elif len(username) > 100:
-        return False, 'username_too_long'
+    if sql.query('SELECT COUNT(*) FROM account WHERE id LIKE %s', (id, ))[0][0] != 0:
+        return False, 'id_exists'
+    elif len(id) > 100:
+        return False, 'id_too_long'
 
     if len(name) > 255:
         return False, 'name_too_long'
@@ -105,9 +105,9 @@ def register(name: str, email: str, username: str, password: str, affiliation: s
     sql.transaction.start()
 
     try:
-        sql.query('INSERT INTO account (uuid, email, username, password, name, affiliation, major)'
-                  ' VALUE (%s, %s, %s, %s, %s, %s, %s)',
-                  (user_uuid.bytes, email, username, password, name, affiliation, major, ))
+        sql.query('INSERT INTO account (uuid, email, id, password, name, phone-number)'
+                  ' VALUE (%s, %s, %s, %s, %s, %s)',
+                  (user_uuid.bytes, email, id, password, name, phone_number, ))
         sql.query('DELETE FROM mail_verification WHERE token=%s', (token, ))
 
     except:
@@ -118,10 +118,10 @@ def register(name: str, email: str, username: str, password: str, affiliation: s
         return True, None
 
 
-def login(username: str, password: str) -> bool:
+def login(id: str, password: str) -> bool:
     sql = MySQL()
 
-    pw_hash = sql.query('SELECT password FROM account WHERE username LIKE %s', (username, ))
+    pw_hash = sql.query('SELECT password FROM account WHERE id LIKE %s', (id, ))
     if len(pw_hash) != 1:
         return False
 
@@ -131,7 +131,7 @@ def login(username: str, password: str) -> bool:
 def get_user_data(user_uuid: uuid.UUID) -> Union[dict, None]:
     sql = MySQL(dict_cursor=True)
 
-    data = sql.query('SELECT uuid, email, username, name, affiliation, major, last_login FROM account WHERE uuid=%s',
+    data = sql.query('SELECT uuid, email, username, name, last_login FROM account WHERE uuid=%s',
                      (user_uuid.bytes, ))
 
     if len(data) != 1:
@@ -175,35 +175,35 @@ def change_password(user_uuid: uuid.UUID, old_password: str, new_password: str) 
         return True, None
 
 
-def find_username(name: str, email: str) -> Tuple[bool, Union[str, None]]:
+def find_id(name: str, email: str) -> Tuple[bool, Union[str, None]]:
     if name is None or email is None:
         return False, 'no_required_args'
 
     sql = MySQL(dict_cursor=True)
     try:
-        res = sql.query('SELECT username FROM account WHERE name=%s AND email=%s', (name, email, ))
+        res = sql.query('SELECT id FROM account WHERE name=%s AND email=%s', (name, email, ))
         if len(res) == 1:
-            username = res[0]['username']
+            id = res[0]['id']
         else:
             return False, 'user_does_not_exists'
     except:
         return False, 'exception_occurred'
 
     if not mailer.send_one(email, 'GISTORY user', 'GISTORY: 아이디 찾기 메일',
-                           username_find_mail_body.format(name=name, username=username)):
+                           id_find_mail_body.format(name=name, id=id)):
         return False, 'sending_mail_failed'
     else:
         return True, None
 
 
-def reset_password(name: str, email: str, username: str) -> Tuple[bool, Union[str, None]]:
-    if name is None or email is None or username is None:
+def reset_password(name: str, email: str, id: str) -> Tuple[bool, Union[str, None]]:
+    if name is None or email is None or id is None:
         return False, 'no_required_args'
 
     sql = MySQL()
     try:
-        res = sql.query('SELECT uuid FROM account WHERE name=%s AND email=%s AND username=%s',
-                        (name, email, username, ))
+        res = sql.query('SELECT uuid FROM account WHERE name=%s AND email=%s AND id=%s',
+                        (name, email, id, ))
         if len(res) == 1:
             user_uuid = uuid.UUID(bytes=res[0][0])
         else:

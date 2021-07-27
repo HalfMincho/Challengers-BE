@@ -30,7 +30,7 @@ def issue_register_token(data):
 @account_blueprint.route('verify-token', methods=['GET', 'OPTIONS'])
 @cors_allow(frontend_address)
 @is_api(required_keys=['token', 'email'])
-def verify_token(data):
+def verify_register_token(data):
     if account.verify_register_token(data['email'], data['token']):
         return {'message': 'token_verified'}, 200
     else:
@@ -39,7 +39,7 @@ def verify_token(data):
 
 @account_blueprint.route('/register', methods=['POST', 'OPTIONS'])
 @cors_allow(frontend_address)
-@is_api(required_keys=['name', 'email', 'token', 'username', 'password', 'affiliation', 'major'], input_type='json')
+@is_api(required_keys=['name', 'email', 'token', 'id', 'password', 'phone_number'], input_type='json')
 def register(data):
     if not account.verify_register_token(data['email'], data['token']):
         return {'error': 'register_token_verification_failed'}, 400
@@ -60,7 +60,7 @@ def login(data):
     if not account.login(**data):
         return {'error': 'authentication_failed'}, 403
 
-    user_uuid = account.get_uuid(username=data['username'])
+    user_uuid = account.get_uuid(id=data['id'])
 
     if user_uuid is None:
         return {'error': 'authentication_failed'}, 403
@@ -132,7 +132,7 @@ def change_password(user_uuid, user_token, data):
 @cors_allow(frontend_address)
 @is_api(required_keys=['name', 'email'], input_type='json')
 def find_username(data):
-    result, error = account.find_username(**data)
+    result, error = account.find_id(**data)
 
     if not result:
         return {'error': error}, (404 if error == 'user_does_not_exists' else 500)
@@ -142,7 +142,7 @@ def find_username(data):
 
 @account_blueprint.route('/reset_password', methods=['POST', 'OPTIONS'])
 @cors_allow(frontend_address)
-@is_api(required_keys=['name', 'email', 'username'], input_type='json')
+@is_api(required_keys=['name', 'email', 'id'], input_type='json')
 def reset_password(data):
     result, error = account.reset_password(**data)
 
