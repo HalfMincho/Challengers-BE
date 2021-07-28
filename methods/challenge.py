@@ -1,6 +1,20 @@
 import uuid
+from typing import Union
 from connector import MySQL
 from constants import messages
+
+
+def get_challenge_by_id(challenge=None) -> Union[uuid.UUID, None]:
+    if challenge is None:
+        raise ValueError('Challenge must be provided as integer.')
+
+    sql = MySQL()
+    if challenge is not None:
+        ret = sql.query('SELECT uuid FROM challenge WHERE id=%s', (challenge, ))
+        if len(ret) == 1:
+            return uuid.UUID(bytes=ret[0][0])
+
+    return None
 
 
 def get_challenge(challenge_id: int):

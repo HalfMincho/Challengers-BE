@@ -143,3 +143,4 @@ def protected(verify: bool = False):
 
 
 from .challenge import challenge_blueprint
+from .shopping_basket import shopping_basket_blueprint
