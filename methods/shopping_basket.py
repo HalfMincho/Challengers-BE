@@ -6,9 +6,6 @@ from constants import messages
 def add_challenge_to_basket(submitter: UUID, challenge: UUID):
     sql = MySQL()
 
-    if challenge is None:
-        return False, messages.no_required_args, 400
-
     sql.transaction.start()
     try:
         sql.query('INSERT INTO shopping_basket (account, challenge) VALUE  (%s, %s)',

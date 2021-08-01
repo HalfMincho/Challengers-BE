@@ -4,24 +4,24 @@ from connector import MySQL
 from constants import messages
 
 
-def get_challenge_by_id(challenge=None) -> Union[uuid.UUID, None]:
+def get_challenge_by_id(challenge: int = None) -> Union[uuid.UUID, None]:
     if challenge is None:
         raise ValueError('Challenge must be provided as integer.')
 
     sql = MySQL()
-    if challenge is not None:
-        ret = sql.query('SELECT uuid FROM challenge WHERE id=%s', (challenge, ))
-        if len(ret) == 1:
-            return uuid.UUID(bytes=ret[0][0])
+    ret = sql.query('SELECT uuid FROM challenge WHERE id=%s', (challenge,))
+    if len(ret) != 1:
+        return None
 
-    return None
+    return uuid.UUID(bytes=ret[0][0])
 
 
 def get_challenge(challenge_id: int):
     sql = MySQL(dict_cursor=True)
 
     result = sql.query('SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, '
-                       'start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=%s', (challenge_id,))
+                       'start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=%s',
+                       (challenge_id,))
 
     if len(result) == 0:
         return False, None

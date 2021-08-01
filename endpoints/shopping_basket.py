@@ -1,12 +1,13 @@
 from flask import Blueprint
 from methods import shopping_basket, challenge
-from . import is_api, protected
+from . import is_api, protected, cors_allow
 
 shopping_basket_blueprint = Blueprint('Shopping_basket', __name__)
 
 
 @shopping_basket_blueprint.route('', methods=['POST', 'OPTIONS'])
 @is_api(required_keys=['challenge'], input_type='json')
+@cors_allow()
 @protected()
 def add_challenge_to_basket(user_uuid, user_token, data):
     data['submitter'] = user_uuid
